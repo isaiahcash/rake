@@ -50,6 +50,11 @@ class DB
         }
     }
 
+    static function last_insert_id()
+    {
+        return self::get_DB()->lastInsertId();
+    }
+
     static function disconnect()
     {
         self::$db=null;

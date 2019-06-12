@@ -376,7 +376,11 @@ function save_result($year_id, $make_id, $model_id, $url, $image_src, $title, $p
 
     if($query != false)
     {
-        $result_id = DB::lastInsertId();
+
+
+        $query = DB::query($sql, $params);
+
+        $result_id = DB::last_insert_id();
         foreach($attr_types as $attr_type) {
             if(isset($attr[$attr_type])) {
                 $sql = "UPDATE saved_results SET " . $attr_type . " = :" . $attr_type . " WHERE result_id = :result_id";
@@ -692,9 +696,11 @@ function update_saved_images()
     $sql = "SELECT * FROM saved_results";
     $query = DB::query($sql);
     $results = $query->fetchAll(PDO::FETCH_ASSOC);
-
+    $i = 0;
     foreach($results as $result)
     {
+        $i++;
+        print $i . "<br>";
         $image_url = $result['image_src'];
 
         $image_url = save_image($image_url);
@@ -703,6 +709,7 @@ function update_saved_images()
             "image_src" => $image_url,
             "result_id" => $result['result_id']
         );
+
         $sql = "UPDATE saved_results SET image_src = :image_src WHERE result_id = :result_id";
         $query = DB::query($sql, $params);
 
