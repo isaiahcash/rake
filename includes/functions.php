@@ -686,34 +686,11 @@ function save_image($image_url)
 
     file_put_contents( $target_dir . $file_name, $content);
 
+    chmod($target_dir . $file_name, 0775);
+
     $server_path = "https://isaiahcash.com/rake/images/" . $file_name;
 
     return $server_path;
-}
-
-function update_saved_images()
-{
-    $sql = "SELECT * FROM saved_results";
-    $query = DB::query($sql);
-    $results = $query->fetchAll(PDO::FETCH_ASSOC);
-    $i = 0;
-    foreach($results as $result)
-    {
-        $i++;
-        print $i . "<br>";
-        $image_url = $result['image_src'];
-
-        $image_url = save_image($image_url);
-
-        $params = array(
-            "image_src" => $image_url,
-            "result_id" => $result['result_id']
-        );
-
-        $sql = "UPDATE saved_results SET image_src = :image_src WHERE result_id = :result_id";
-        $query = DB::query($sql, $params);
-
-    }
 }
 
 function random_string($length = 10)
@@ -1060,29 +1037,31 @@ function resync_images()
 
         $html = file_get_html($link);
 
-        $i = 0;
-        $images = array();
-        foreach ($html->find('img') as $image) {
-            $i++;
-            if ($i > 10) break;
+        if($html != false) {
+            $i = 0;
+            $images = array();
+            foreach ($html->find('img') as $image) {
+                $i++;
+                if ($i > 10) break;
 
-            if (strpos($image->src, "x50") === false) {
-                $images[] = $image->src;
+                if (strpos($image->src, "x50") === false) {
+                    $images[] = $image->src;
+                }
             }
+            if (!isset($images[0])) $images[0] = "";
+            $page['images'] = $images;
+
+            print "Updating result_id: " . $result['result_id'] . "<br>";
+
+            $server_path = save_image($page['images'][0]);
+
+            $params = array(
+                "image_src" => $server_path,
+                "result_id" => $result['result_id']
+            );
+            $sql2 = "UPDATE saved_results SET image_src = :image_src WHERE result_id = :result_id";
+            $query2 = DB::query($sql2, $params);
         }
-        if(!isset($images[0])) $images[0] = "";
-        $page['images'] = $images;
-
-        print "Updating result_id: " . $result['result_id'] . "<br>";
-
-        $server_path = save_image($page['images'][0]);
-
-        $params = array(
-            "image_src" => $server_path,
-            "result_id" => $result['result_id']
-        );
-        $sql2 = "UPDATE saved_results SET image_src = :image_src WHERE result_id = :result_id";
-        $query2 = DB::query($sql2, $params);
     }
 }
 
