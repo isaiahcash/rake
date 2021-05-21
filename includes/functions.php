@@ -124,9 +124,15 @@ function update_database($make_id, $model_id, $limit)
     foreach ($all_links as $link) {
 
         $page = parse_page($link);
-        $check = save_result($page['year_id'], $page['make_id'], $page['model_id'], $page['link'], $page['images'][0], $page['title'], $page['price'], $page['post_date'], $page['post'], $page['found_date'], $page['attr'], $search_make_id, $search_model_id);
-        if ($check) $msg .= "Saved result! <br>";
-        else $msg .= "Not saved. (" . convert_make($page['make_id']) . " - $" . $page['price'] . " - " . $page['attr']['odo'] . " mi. )<br>";
+
+        $duplicates = check_duplicates($page);
+
+        if(count($duplicates) < 1) {
+            $check = save_result($page['year_id'], $page['make_id'], $page['model_id'], $page['link'], $page['images'][0], $page['title'], $page['price'], $page['post_date'], $page['post'], $page['found_date'], $page['attr'], $search_make_id, $search_model_id);
+            if ($check) $msg .= "Saved result! <br>";
+            else $msg .= "Not saved. (" . convert_make($page['make_id']) . " - $" . $page['price'] . " - " . $page['attr']['odo'] . " mi. )<br>";
+        }
+        else $msg .= "Not saved. Duplicate was found. (" . convert_make($page['make_id']) . " - $" . $page['price'] . " - " . $page['attr']['odo'] . " mi. )<br>";
 
     }
 
@@ -322,7 +328,7 @@ function save_result($year_id, $make_id, $model_id, $url, $image_src, $title, $p
     }
 
     if(isset($price)) {
-        if ($price > 20000)
+        if ($price > 35000)
         {
             $check = ignore_result($search_make_id, $search_model_id, $url);
             return false;
@@ -673,6 +679,36 @@ function search_duplicates($result_id)
 }
 
 
+function check_duplicates($primary)
+{
+
+    foreach($primary['attr'] as $attr_id => $attr)
+    {
+        $primary[$attr_id] = $attr;
+    }
+
+    $duplicates = [];
+    $test_columns = array("price", "found_model", "title_status", "trans", "latitude", "longitude", "odo");
+
+    $sql = "SELECT * FROM saved_results WHERE expired != 1";
+    $query = DB::query($sql);
+    $secondary_array = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($secondary_array as $secondary)
+    {
+        $i = 0;
+        foreach($test_columns as $column)
+        {
+            if($primary[$column] == $secondary[$column]) $i++;
+        }
+        if($i > 5) $duplicates[] = $secondary['result_id'];
+    }
+
+    return $duplicates;
+
+}
+
+
 /* image saving */
 function save_image($image_url)
 {
@@ -686,34 +722,13 @@ function save_image($image_url)
 
     file_put_contents( $target_dir . $file_name, $content);
 
+    chmod($target_dir . $file_name, 0775);
+    chown($target_dir . $file_name, "www-data");
+    chgrp($target_dir . $file_name, "www-data");
+
     $server_path = "https://isaiahcash.com/rake/images/" . $file_name;
 
     return $server_path;
-}
-
-function update_saved_images()
-{
-    $sql = "SELECT * FROM saved_results";
-    $query = DB::query($sql);
-    $results = $query->fetchAll(PDO::FETCH_ASSOC);
-    $i = 0;
-    foreach($results as $result)
-    {
-        $i++;
-        print $i . "<br>";
-        $image_url = $result['image_src'];
-
-        $image_url = save_image($image_url);
-
-        $params = array(
-            "image_src" => $image_url,
-            "result_id" => $result['result_id']
-        );
-
-        $sql = "UPDATE saved_results SET image_src = :image_src WHERE result_id = :result_id";
-        $query = DB::query($sql, $params);
-
-    }
 }
 
 function random_string($length = 10)
@@ -1060,29 +1075,31 @@ function resync_images()
 
         $html = file_get_html($link);
 
-        $i = 0;
-        $images = array();
-        foreach ($html->find('img') as $image) {
-            $i++;
-            if ($i > 10) break;
+        if($html != false) {
+            $i = 0;
+            $images = array();
+            foreach ($html->find('img') as $image) {
+                $i++;
+                if ($i > 10) break;
 
-            if (strpos($image->src, "x50") === false) {
-                $images[] = $image->src;
+                if (strpos($image->src, "x50") === false) {
+                    $images[] = $image->src;
+                }
             }
+            if (!isset($images[0])) $images[0] = "";
+            $page['images'] = $images;
+
+            print "Updating result_id: " . $result['result_id'] . "<br>";
+
+            $server_path = save_image($page['images'][0]);
+
+            $params = array(
+                "image_src" => $server_path,
+                "result_id" => $result['result_id']
+            );
+            $sql2 = "UPDATE saved_results SET image_src = :image_src WHERE result_id = :result_id";
+            $query2 = DB::query($sql2, $params);
         }
-        if(!isset($images[0])) $images[0] = "";
-        $page['images'] = $images;
-
-        print "Updating result_id: " . $result['result_id'] . "<br>";
-
-        $server_path = save_image($page['images'][0]);
-
-        $params = array(
-            "image_src" => $server_path,
-            "result_id" => $result['result_id']
-        );
-        $sql2 = "UPDATE saved_results SET image_src = :image_src WHERE result_id = :result_id";
-        $query2 = DB::query($sql2, $params);
     }
 }
 
@@ -1162,5 +1179,5 @@ function send_mail($subject, $msg)
 
     $to = "isaiahcash@gmail.com";
 
-    $check = mail($to, $subject, $msg, $headers);
+//    $check = mail($to, $subject, $msg, $headers);
 }
