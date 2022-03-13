@@ -57,7 +57,7 @@ foreach($results as $row)
 
     $assignment = "<div id='assignment_current_" . $row['result_id'] . "'>";
     $assignment .= convert_year($row['year_id']) . " " . convert_make($row['make_id']) . " " . convert_model($row['model_id']);
-    $assignment .="<button class='btn btn-sm btn-info ml-2' style='padding: 2px 6px;' onclick='edit_assignment(" . $row['result_id'] . ")'><i class='fas fa-pencil-alt fa-xs'></i></button>";
+    $assignment .="<button class='btn btn-sm btn-info ml-2' style='padding: 2px 6px;' onclick='edit_assignment(" . $row['result_id'] . ")'><i class='fa fa-pencil fa-xs'></i></button>";
     $assignment .= "</div>";
     $assignment .= "<div id='assignment_new_" . $row['result_id'] . "' style='display: none'>";
     $assignment .= "<select class='custom-select my-1' id='assignment_new_year_" . $row['result_id'] . "'>";
@@ -94,8 +94,8 @@ foreach($results as $row)
     }
 
     $assignment .= "</select>";
-    $assignment .= "<button class='btn btn-sm btn-success my-1' style='padding: 2px 6px' onclick='save_assignment(" . $row['result_id'] . ")'><i class='far fa-save fa-xs'></i></button>";
-    $assignment .= "<button class='btn btn-sm btn-danger my-1 ml-1' style='padding: 2px 6px' onclick='cancel_assignment(" . $row['result_id'] . ")'><i class='fas fa-window-close fa-xs'></i></button>";
+    $assignment .= "<button class='btn btn-sm btn-success my-1' style='padding: 2px 6px' onclick='save_assignment(" . $row['result_id'] . ")'><i class='fa fa-floppy-o fa-xs'></i></button>";
+    $assignment .= "<button class='btn btn-sm btn-danger my-1 ml-1' style='padding: 2px 6px' onclick='cancel_assignment(" . $row['result_id'] . ")'><i class='fa fa-window-close fa-xs'></i></button>";
 
     $assignment .= "</div>";
 
@@ -132,12 +132,12 @@ foreach($results as $row)
 
     $buttons = "<button class='btn btn-danger btn-sm' style='width: 80px' id='remove_button_" . $row['result_id'] . "' onclick='remove_id(" . $row['result_id'] . ", true)'>Remove</button>";
     if($row['favorite'] == 0) $buttons .= "<button class='btn btn-info btn-sm mt-2' style='width: 80px' id='like_button_" . $row['result_id'] . "' onclick='like_id(" . $row['result_id'] . ")'>Favorite</button>";
-    else $buttons .= "<button class='btn btn-success btn-sm mt-2' style='width: 80px' id='dislike_button_" . $row['result_id'] . "' onclick='dislike_id(" . $row['result_id'] . ")'>Saved! <i class='fas fa-heart fa-xs'></i></button>";
+    else $buttons .= "<button class='btn btn-success btn-sm mt-2' style='width: 80px' id='dislike_button_" . $row['result_id'] . "' onclick='dislike_id(" . $row['result_id'] . ")'>Saved! <i class='fa fa-heart fa-xs'></i></button>";
     $row['buttons'] = $buttons;
 
     $buttons_grid = "<div class='col-6'><button class='btn btn-danger btn-sm mt-2 w-100' id='remove_button_" . $row['result_id'] . "' onclick='remove_id(" . $row['result_id'] . ", true)'>Remove</button></div>";
     if($row['favorite'] == 0) $buttons_grid .= "<div class='col-6'><button class='btn btn-info btn-sm mt-2 w-100' id='like_button_" . $row['result_id'] . "' onclick='like_id(" . $row['result_id'] . ")'>Favorite</button></div>";
-    else $buttons_grid .= "<div class='col-6'><button class='btn btn-success btn-sm mt-2 w-100' id='dislike_button_" . $row['result_id'] . "' onclick='dislike_id(" . $row['result_id'] . ")'>Saved! <i class='fas fa-heart fa-xs'></i></button></div>";
+    else $buttons_grid .= "<div class='col-6'><button class='btn btn-success btn-sm mt-2 w-100' id='dislike_button_" . $row['result_id'] . "' onclick='dislike_id(" . $row['result_id'] . ")'>Saved! <i class='fa fa-heart fa-xs'></i></button></div>";
     $row['buttons_grid'] = $buttons_grid;
 
     $output['data'][] = $row;

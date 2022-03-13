@@ -28,7 +28,7 @@ $makes = retrieve_makes(1);
                     <select class="custom-select" id="update_model_id" name="update_model_id" required>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary disabled" disabled>Submit</button>
             </form>
         </div>
         <br>
@@ -38,7 +38,7 @@ $makes = retrieve_makes(1);
 <?php
 
 if(isset($_POST['update_make_id']) && isset($_POST['update_model_id'])) {
-    $msg = update_database($_POST['update_make_id'], $_POST['update_model_id'], 100);
+//    $msg = update_database($_POST['update_make_id'], $_POST['update_model_id'], 100);
 
     print $msg;
 

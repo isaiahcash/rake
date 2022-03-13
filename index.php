@@ -8,6 +8,23 @@ $title_statuses = retrieve_title_statuses();
 $trans = retrieve_trans();
 ?>
 
+<div id="service_modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Notice</div>
+            </div>
+            <div class="modal-body">
+                This database of vehicle posts will no longer be updated as of August 31, 2021. Any expired posts will eventually be removed.<br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="container-fluid pt-3">
     <div id="alert_div"></div>
     <div class="row">
@@ -253,6 +270,10 @@ script_includes();
     var saved_results = null;
 
     $(document).ready(function() {
+
+        $("#service_modal").modal('show');
+
+
         if(localStorage.getItem('table_selector')){
             var value = localStorage.getItem('table_selector');
             table_selector_set(value);

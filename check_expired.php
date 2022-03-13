@@ -12,7 +12,7 @@ start_page();
             <h4>Check Expired Posts</h4>
             <form action="check_expired.php" method="post">
                 <input name="check" value="1" hidden readonly>
-                <button type="submit" class="btn btn-primary">Check</button>
+                <button type="submit" class="btn btn-primary disabled" disabled>Check</button>
             </form>
         </div>
         <br>
@@ -22,7 +22,7 @@ start_page();
             <?php
 
             if(isset($_POST['check'])) {
-                $msg = check_expired();
+//                $msg = check_expired();
                 print $msg;
             }
             ?>

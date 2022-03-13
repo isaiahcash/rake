@@ -9,5 +9,4 @@ require_once(__DIR__ . '/functions.php');
 require_once(__DIR__ . '/mysql.php');
 require_once(__DIR__ . '/../simplehtmldom/simple_html_dom.php');
 
-$include_flag = include(__DIR__ . '/../../home/includes/restrict.php');
-if($include_flag === 1) restrict_access();
+require_once(__DIR__ . '/navigate_home.php');

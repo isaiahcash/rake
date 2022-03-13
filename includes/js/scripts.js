@@ -20,7 +20,7 @@ function show_alert(flag, message)
     var class_flag = "";
     if(flag) class_flag = "success";
     else class_flag = "danger";
-    $("#alert_div").append("<div class='hovering-alert alert alert-" + class_flag + " ' role='alert' id='alert-" + rand + "'><button type='button' class='close' data-dismiss='alert'><span><i class='fas fa-times ml-2'></i></span></button>" + message + "</div>");
+    $("#alert_div").append("<div class='hovering-alert alert alert-" + class_flag + " ' role='alert' id='alert-" + rand + "'><button type='button' class='close' data-dismiss='alert'><span><i class='fa fa-times ml-2'></i></span></button>" + message + "</div>");
     setTimeout(function(){
         $("#alert-" + rand).hide();
     }, 3000);
